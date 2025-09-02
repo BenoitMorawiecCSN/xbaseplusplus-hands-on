@@ -1,0 +1,2 @@
+PROCEDURE main 
+    ? "hello world !"
