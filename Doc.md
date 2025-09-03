@@ -4,22 +4,6 @@
 
 ## Setup
 
-## Basics
-
-Xbase is case insensitive
-
-Really important to know:
-- list and strings index start at 1
-
-## Xbase is weird
-
-String inequality: for comparing a string with a single letter string it does not work properly
-```
-? "abcde" != "a"        * N
-? "abcde" == "a"        * N
-* if both are False where is the truth ?
-```
-
 ## Compile
 
 Compile a single file:
@@ -28,12 +12,6 @@ xpp file.prg
 alink file.obj
 ```
 
-## Xbase Projects
-
-
-
-## Run
-
 Run:
 ```
 file.exe
@@ -41,7 +19,130 @@ file.exe
 
 Programs can be terminated with `ALT + C`
 
-## Modularization
+## Xbase Projects
+
+### Introduction
+
+ProjectBuilder is a tool for managing entire software projects.
+
+The central element: one file with extension `.xpj` (for XbaseProJect) as a description of the project.
+- information for the builder
+- information for compiler
+- information for linker
+- which executable to create
+- name of source files
+
+### Basic Manifest Template
+
+Generate the basic template from a list of files:
+```
+pbuild app.prg file1.prg file2.prg file3.prg
+```
+
+Generate the basic template from files in current workdir:
+```bat
+dir /b > project-filess.txt
+pbuild @project-files.txt
+
+:: The @ indicates the compiler to take additional arguments from a file.
+```
+
+The manifest structure, example:
+```
+//
+// Project - Definition - File created by PBUILD Version 2.00.2383
+// Date: 03.09.2025 Time: 08:20:46
+//
+
+[PROJECT]
+    VERSION       = 2.2
+    TARGET_DIR    = .\run
+    project.xpj                 // the root of the project
+
+[project.xpj]
+    project-app.exe
+
+[project-app.exe]
+    COMPILE              = xpp
+    COMPILE_FLAGS        = /q
+    DEBUG                = yes
+    GUI                  = no
+    LINKER               = alink
+    LINK_FLAGS           = 
+    RC_COMPILE           = arc
+    RC_FLAGS             = 
+    INTERMEDIATE_DEBUG   = .debug
+    INTERMEDIATE_RELEASE = .release
+    app.prg
+```
+
+The PROJECT section 
+- is the entry point for the Project Builder
+- lists definitions valid for the entire project
+
+The project.xpj section
+- only one per project
+- the root of the project
+- lists all build artefacts executables / dll resulting of the project
+
+The next sections, one per DLL / executable 
+- the section name is the name of the resulting file
+- the requirements for the executable / dll
+- the configuration of the executable / dll
+- to build an executable one of the .prg files must contain a startup procedure
+
+Summary, the project manifests
+- lists build artefacts
+- how to build them
+- keep track of program dependencies updates
+
+### Dependencies update 
+
+Pbuild is able to find file dependencies and autocomplete the XBJ manifest to include the dependencies. <br/>
+Complete the manifest with new dependencies:
+```bat
+pbuild project.xpj /g
+
+:: resulting lines are inserted in the manifest between 
+:: // $START-AUTODEPEND 
+:: and 
+:: // $STOP-AUTODEPEND
+:: // don't put something there, it might be erased
+```
+
+### Project build
+
+Build a project:
+```bat
+pbuild      
+    :: builds all target in the project, when project manifest 
+    :: has the default name, project.xbj
+
+pbuild manifest-file
+    :: builds all target in the project, when project manifest
+    :: has a custom filename
+
+pbuild manifest-file.xpj
+    :: builds all target in the project, when project manifest
+    :: has a custom filename
+```
+
+Add flag `/t:targetName` to command above to build a specific target within a project.
+
+### Manifest options
+
+Choose where to place the build result:
+```
+[PROJECT]
+    TARGET_DIR  = .\artefact 
+```
+
+## Basics
+
+Xbase is case insensitive
+
+Really important to know:
+- list and strings index start at 1
 
 ## Good Practices
 
@@ -56,6 +157,15 @@ Variables
 - - `a` for arrays
 
 Function name are in PascalCase
+
+## Xbase is weird
+
+String inequality: for comparing a string with a single letter string it does not work properly
+```
+? "abcde" != "a"        * N
+? "abcde" == "a"        * N
+* if both are False where is the truth ?
+```
 
 ## Synthax
 
@@ -341,10 +451,18 @@ cVar = Str(numeric, lenght)
 cVar = Str(numeric, lenght, decimalRounding)
 ```
 
+## Modularization
+
+
+
 ## Extensions
 
 DLL, dynamic link library, compiled binary library
 - from windows DLL
+
+## UI
+
+
 
 ## Databases
 

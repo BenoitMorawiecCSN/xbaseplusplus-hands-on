@@ -1,2 +1,4 @@
 *.exe
 *.LOG
+artefact/
+.debug
