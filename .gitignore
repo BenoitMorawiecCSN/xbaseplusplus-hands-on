@@ -2,3 +2,4 @@
 *.LOG
 artefact/
 .debug
+commit-message.txt
