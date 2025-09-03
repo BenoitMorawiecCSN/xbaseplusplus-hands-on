@@ -17,7 +17,29 @@ Have a proper terminal
 
 ### Public key connection
 
+Generate the key
+```
+ssh-keygen -t ed25519 -C "key label, usually email"
+```
 
+Add the key to the ssh agent:
+```
+ssh-add privateKeyPath
+```
+
+Copy the public key content to [github](https://github.com/settings/keys)
+
+Verify:
+```
+ssh -T git@github.com
+```
+
+Let git use this key:
+```
+git config core.sshCommand "ssh -F /dev/null -i privateKeyPath"
+```
+
+`-F` in order to ignore ssh config files.
 
 ### Config
 
