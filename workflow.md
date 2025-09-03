@@ -15,6 +15,18 @@ Have a proper terminal
 
 ## Git
 
+### Public key connection
+
+
+
+### Config
+
+Username and email
+```
+git config --global user.email "email"
+git config --global user.name "username"
+```
+
 ### Multiple line commits 
 
 Good practice: 
