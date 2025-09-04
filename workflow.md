@@ -43,7 +43,7 @@ git config core.sshCommand "ssh -F /dev/null -i privateKeyPath"
 
 ### Config
 
-Username and email
+Username and email (otherwise greyed out on github list of commits)
 ```
 git config --global user.email "email"
 git config --global user.name "username"

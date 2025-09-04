@@ -1,0 +1,27 @@
+//
+// Project - Definition - File created by PBUILD Version 2.00.2383
+// Date: 03.09.2025 Time: 11:44:33
+//
+
+[PROJECT]
+    VERSION       = 2.2
+    TARGET_DIR    = .\artefact
+    project.xpj
+
+[project.xpj]
+    app.exe
+
+[app.exe]
+    COMPILE              = xpp
+    COMPILE_FLAGS        = /q
+    DEBUG                = yes
+    GUI                  = no
+    LINKER               = alink
+    LINK_FLAGS           = 
+    RC_COMPILE           = arc
+    RC_FLAGS             = 
+    INTERMEDIATE_DEBUG   = .debug
+    INTERMEDIATE_RELEASE = .release
+    main.prg
+    math-module.prg
+    display/display.prg

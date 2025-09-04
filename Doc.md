@@ -137,6 +137,10 @@ Choose where to place the build result:
     TARGET_DIR  = .\artefact 
 ```
 
+## Modularization
+
+Functions / class can be called in any code that is compiled together with the prg containing the declaration.
+
 ## Basics
 
 Xbase is case insensitive
@@ -157,6 +161,8 @@ Variables
 - - `a` for arrays
 
 Function name are in PascalCase
+
+Class methods on Objects should return `self` if not returning a meaningfull value (enables chaining)
 
 ## Xbase is weird
 
@@ -213,7 +219,6 @@ b := (a := 12)
 
 In expressions `=` behaves as an equality comparison
 
-
 ### Booleans
 
 Booleans literals
@@ -262,6 +267,17 @@ SubStr(string, index, lenght)
 
 String comparison: char by char, not ref :)
 
+Remove leading and trailing blank spaces:
+```
+cNewString = AllTrim(cString)
+```
+
+Upper / Lower the chars in the string:
+```
+cNewString = Lower(cString)
+cNewString = Upper(cString)
+```
+
 ### Lists
 
 Array:
@@ -306,9 +322,139 @@ dToday = Date()
 dDateValue = CtoD("DD/MM/YYYY")
 ```
 
-### Object
+### Class Quickstart
 
 Objet = variables + program code
+
+Declare a class:
+```
+CLASS ClassName
+    
+ENDCLASS
+```
+
+Within the class definition are the declarations of the variables and methods.
+
+They exist two types of vars:
+- class vars, accessible directly on the object, shared with the instance
+- - must be accessed on the object not on self
+- vars, instance related var
+
+Declare variables
+```
+    VAR varName1, varName2
+    VAR varName
+    CLASS VAR varname
+
+    EXPORTED:
+        VAR varName
+        CLASS VAR varName
+```
+
+They exist two types of methods:
+- class methods, accessible directly on the object
+- methods, instance related method
+
+
+Declare methods within the class declaration:
+```
+    CLASS METHOD MethodName1, MethodName2, MethodName3
+    CLASS METHOD MethodName
+    METHOD MethodName
+
+    EXPORTED:
+        CLASS METHOD MethodName
+        METHOD MethodName
+```
+
+Sections of SHARED, EXPORTED, HIDDEN can mix both variables and methods.
+
+Methods must be defined after `CLASSEND`, and on the class:
+```
+CLASS METHOD ClassName:MethodName(paramList)
+    * method code 
+RETURN
+
+METHOD ClassName:MethodName(paramList)
+    * method code 
+RETURN
+```
+
+Access object elements (method or var):
+```
+oObjectRef:element
+```
+
+Methods reference their class instance with `self`
+- `::`, a shorthand notation for `self:`
+
+Default initialization (optional):
+- class method `InitClass()`
+- invoked once
+- called after the call to the class function
+- can intialize class variables
+- `self` contains a reference to the class object
+
+Constructor (optionnal):
+- method `Init`
+- can take parameter forwarded from the call to new `ClassName():new(arg1, arg2)`
+- `self` contains a reference to the instance
+
+Built-in class methods
+- `className()`, returns the class name as a string
+- `classObject()`, returns the class object 
+- `isDerivedFrom(cClassName | oClassObject)`, is a class inheriting the class
+
+Initialize an object (class instance):
+```
+oClassInstance = ClassName():new()
+oClassInstance = ClassName():new(arg1, arg2, arg3)
+```
+
+Classes annotations
+- `STATIC`, makes the class to be called only within source code file of declaration
+- `FINAL`, cannot be herited from
+
+Inheritance
+- both single and multiple
+- `FROM listOfSuperClass`, inherits all members and functions of the parent
+- - the child class can call all parent methods that are not marked as `HIDDEN`
+
+### Class elements visibility
+
+- `HIDDEN` only visible within methods of this class
+- `PROTECTED` only visible within methods of this class and its subclass
+- `EXPORTED` visible to the entire application
+
+additionnal annotation for variables:
+- `READONLY`, restrict outside var accessibility to read only, still editable by the class methods
+
+By default, all of the instance variables and methods declared in the class are HIDDEN.
+
+### Class Theory
+
+STATIC CLASS
+- A call to a STATIC CLASS outside of its definition file returns NIL
+
+FEEZE
+- a class cannot be replaced by another class with same name
+- class replacement can occur due to dynamically created class at runtime
+
+SHARED
+- class variables that are not declared as `SHARED` by the parent class are "injected" into the child as distinct from the parent
+
+### DataClass
+
+Object cannot have new members at runtime, they must be declared together with class declaration.
+
+DataObject:
+```
+oDataObject = DataObject():New()
+
+oDataObject:Key1 = value
+oDataObject:Key2 = value
+oDataObject:Key3 = value
+```
 
 ### Code blocks
 
@@ -401,7 +547,7 @@ Skip the rest of the current loop iteration, and move to next iteration
 LOOP
 ```
 
-### functions
+### Functions
 
 Declare a function (must be outside of a procedure):
 ```
@@ -451,10 +597,6 @@ cVar = Str(numeric, lenght)
 cVar = Str(numeric, lenght, decimalRounding)
 ```
 
-## Modularization
-
-
-
 ## Extensions
 
 DLL, dynamic link library, compiled binary library
@@ -463,6 +605,17 @@ DLL, dynamic link library, compiled binary library
 ## UI
 
 
+## HTTP
+
+
+
+## Interact with OS
+
+
 
 ## Databases
+
+
+
+## Preprocessor
 
