@@ -1,0 +1,10 @@
+CLASS App
+
+ENDCLASS
+
+
+
+
+PROCEDURE main
+
+RETURN

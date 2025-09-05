@@ -164,6 +164,23 @@ Function name are in PascalCase
 
 Class methods on Objects should return `self` if not returning a meaningfull value (enables chaining)
 
+Release GUI bitmap elements with `destroy` when no longer needed.
+
+When functions require more than 3 parameters, create a `configuration object` passed to the function. So that you can have named arguments within the config and remove the risk of positionnal error + truly optionnal arguments. Not just starting from a position.
+```
+function FunctionName(oDataObject)
+    arg1 = oDataObject:arg1
+    arg2 = oDataObject:arg2
+    arg3 = oDataObject:arg3
+    return
+
+oArguments = DataObject():New()
+oArguments:arg1 = value
+oArguments:arg2 = value
+oArguments:arg3 = value
+FunctionName(oArguments)
+```
+
 ## Xbase is weird
 
 String inequality: for comparing a string with a single letter string it does not work properly
@@ -575,6 +592,12 @@ Get the number of received arguments
 PCount()
 ```
 
+By default argument are provided by value (a copy of the arg content). <br/>
+Pass an argument by reference with the `@` annotation:
+```
+functionCall(@variable)
+```
+
 ### Types
 
 - variables are not strongly typed
@@ -602,18 +625,169 @@ cVar = Str(numeric, lenght, decimalRounding)
 DLL, dynamic link library, compiled binary library
 - from windows DLL
 
-## UI
+## GUI
+
+Xbase Parts
+- provide graphic dialog elements
+- based on os resources
+- event driven design of the OS
+
+To use Xbase Parts the program must be linked for GUI mode. <br/>
+In the project manifest, set GUI to yes for the tqrgets requiring GUI:
+```
+    GUI                  = yes
+```
+
+All GUI output occurs in a window on the screen.
+
+App windows
+- is implicit
+- can be retrieved with `SetAppWindow()` 
+- an instance of XpbCrt
+- hybrid, enables to do both text mode IO and GUI
+- data can be output using pure text oriented functions 
+- - `DispOut()`
+- - `QOut()`
+
+Child parent relationship between elements.
+
+### XBP lifecycle
+
+Create the XBP object
+- 1. instantiate: `XBPName():new()`
+- 2. configure the element (title, apparence)
+- 3. request system resource: `oXBPElement:create()`, create the underlying GUI resource
+- - the component is fully functionnal
+- 4. release a resource: `oXBPElement:destroy()`
+- - generally not needed
+
+Get the current lifecyle of an element with `:status()`
+- returs a numeric value, defined as constants
+- - `XBP_STAT_INIT`
+- - `XBP_STAT_CREATE`
+- - `XBP_STAT_FAILURE`
+
+A resource can be reconfigured after an XBP is created:
+```
+oXBPElement:key = value
+oXBPElement:configure()
+```
+
+### XBP elements
+
+All XBP elements embed `cargo` variable to serve a user defined data. 
+
+`XbpPushButton`
+- `:caption`, text configuration
+- `:activate`, code block configuration for when the button is pressed
+- - automatically called when using the handler
+
+You can inherit XBP elements and extend them, ex:
+```
+CLASS MyPushbutton FROM XbpPushbutton
+    EXPORTED:
+    METHOD init, activate
+ENDCLASS
+
+// initialize superclass and self
+METHOD MyPushbutton:init( cCaption, aPos, aSize )
+    ::XbpPushButton:init(,, aPos, aSize )
+    ::caption := cCaption
+RETURN self
+
+// callback method for the event xbeP_Activate
+METHOD MyPushbutton:activate
+    QOut( "Pushbutton ", ::caption )
+RETURN self
+```
+
+### Events
+
+GUI message stream
+- messages identify the events that have taken place
+- - mouse clicks
+- - keyboard event
+- read events with `AppEvent()`
+- - returns a numeric event code
+- - events are read from the event queue
+
+The event loop:
+```
+nEvent = 0
+DO WHILE nEvent != xbeP_Close()
+    nEvent := AppEvent( @mp1, @mp2, @oXbp )
+        ** mp1, message parameter 1 
+        ** mp2, message parameter 2
+        ** oXbp, the object the event belongs to
+    
+    oXbp:HandleEvent( nEvent, mp1, mp2 )
+        ** calling the handler of the element
+ENDDO
+```
+
+For each XBP there are many instance variables that can contain code blocks that are executed in response to specific events.
+
+Mouse events callback
+- `:LbClick`, Click left button
+- `:LbDblClick` Double click left button
+- `:LbDown` Left button pressed
+- `:LbUp` Left button released
+- `:MbClick` Click middle button
+- `:MbDblClick` Double click middle button
+- `:MbDown` Middle button pressed
+- `:MbUp` Middle button released
+- `:Motion` Mouse moved
+- `:RbClick` Click right button
+- `:RbDblClick` Double click right button
+- `:RbDown` Right button pressed
+- `:RbUp` Right button released
+
+Keyboard & others events callbacks
+- `:Keyboard`, Keyboard entry occurred
+- `:HelpRequest`, Help requested
+- `:SetInputFocus`, Input focus granted
+- `:KillInputFocus`, Input focus lost
+- `:Paint`, XBP moved
+- `:Paint`, XBP redrawn
+- `:Quit`, Application terminated
+- `:Resize`, Size of XBP changed
+
+Write a custom handler:
+```
+function MyCustomHandler()
+    ** code for the event handler
+    return
+
+oXBP:event = {|| MyCustomHandlerCall()}
+```
+
+The event is first attributed to the child, but if it can not handle it, the event is forwarded to its parents until it is handled or ignored (in case no one can handle it).
+
+### GUI actions
+
+Display text on the screen
+- `QOut(cText)`
+
+### GUI, HMTL and CSS Based
+
+
+
+## Timers
+
+
+
+## Databases
+
 
 
 ## HTTP
 
 
+## File system
+
+
 
 ## Interact with OS
-
-
-
-## Databases
 
 
 

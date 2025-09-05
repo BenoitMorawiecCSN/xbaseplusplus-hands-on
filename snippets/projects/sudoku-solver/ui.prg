@@ -1,0 +1,3 @@
+CLASS AppInterface
+
+ENDCLASS
